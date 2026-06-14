@@ -5,12 +5,22 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D18-green.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6.svg)](https://www.typescriptlang.org/)
 
-**Reuse your real logged-in browser session from Node.** Two things:
+**Give an AI agent (or any Node code) your real logged-in browser session.** So an agent can read your login-walled pages — X, Reddit, LinkedIn, internal dashboards — and act on what it finds, **without you pasting cookies**. Built for agent "internet reach"; works as a plain library too.
+
+Two things:
 
 1. **Read + decrypt your browser cookies** (Brave / Chrome / Edge) — **zero dependencies**. The Node equivalent of yt-dlp's `--cookies-from-browser`.
 2. **Open any page in a headless browser with that session** — read login-walled / JS-rendered pages a plain `fetch` can't (via Playwright).
 
-No extension, no manual cookie export.
+No extension, no manual cookie export. Errors-as-values, never throws — drop it straight into an agent tool.
+
+### For agents
+
+Wrap the two calls as tools your agent can call:
+- `getCookies({ browser, domain })` → a cookie header it can attach to API calls.
+- `readPage(url, { browser })` → the rendered text of a logged-in page, for the model to read.
+
+That's it — the agent reuses *your* session instead of needing its own logins or API keys.
 
 > ⚠️ **macOS only for now** (the cookie key lives in the login Keychain — one approval prompt the first time). The headless-read part is cross-platform; only the cookie auto-read is macOS-specific so far. Use a dedicated account for scraping — automated access can get accounts flagged.
 

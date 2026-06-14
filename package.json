@@ -1,7 +1,7 @@
 {
   "name": "browser-session",
   "version": "0.1.0",
-  "description": "Reuse your real logged-in browser session from Node — read + decrypt Brave/Chrome/Edge cookies (zero deps), and open any login-walled / JS-rendered page in a headless browser with that session.",
+  "description": "Give an AI agent your real logged-in browser session: read+decrypt Brave/Chrome/Edge cookies (zero deps) and open any login-walled / JS-rendered page headless with that session. For agent internet-reach (or any Node code).",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,6 +24,9 @@
     "node": ">=18"
   },
   "keywords": [
+    "ai-agent",
+    "llm",
+    "agent-tools",
     "cookies",
     "browser-cookies",
     "chrome-cookies",
