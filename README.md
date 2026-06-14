@@ -22,6 +22,24 @@ Wrap the two calls as tools your agent can call:
 
 That's it — the agent reuses *your* session instead of needing its own logins or API keys.
 
+A drop-in tool (any framework):
+
+```ts
+import { readPage } from "browser-session";
+
+export const browserReadTool = {
+  name: "browser_read",
+  description: "Read any web page (incl. login-walled) using the user's logged-in browser session.",
+  parameters: { type: "object", properties: { url: { type: "string" } }, required: ["url"] },
+  async run({ url }: { url: string }) {
+    const r = await readPage(url, { browser: "brave" });
+    return r.ok ? r.text.slice(0, 20000) : `failed: ${r.error}`;
+  },
+};
+```
+
+> Sibling project: [`x-native`](https://github.com/jpoindexter/x-native) — a native X/Twitter GraphQL client (search, bookmarks) for agents, using the same cookie approach.
+
 > ⚠️ **macOS only for now** (the cookie key lives in the login Keychain — one approval prompt the first time). The headless-read part is cross-platform; only the cookie auto-read is macOS-specific so far. Use a dedicated account for scraping — automated access can get accounts flagged.
 
 ## Install
