@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { getCookies, type Browser } from "./cookies.js";
-import { readPage } from "./index.js";
+import { readPage, fetchYouTubeInfo, fetchYouTubeSubtitles } from "./index.js";
 
 // CLI:
 //   browser-session cookies x.com [--browser brave]        # print the cookie header
@@ -46,7 +46,31 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.error("usage: browser-session <cookies|read> ...\n  cookies <domain> [--browser b] [--names]\n  read <url> [--browser b]");
+  if (cmd === "youtube") {
+    const url = process.argv[3];
+    if (!url) return void console.error("usage: browser-session youtube <url> [--subs|--info]");
+    const mode = flag("--subs") ? "subs" : flag("--info") ? "info" : "both";
+    if (mode !== "subs") {
+      const r = await fetchYouTubeInfo(url);
+      if (!r.ok) { console.error(r.error); process.exitCode = 1; return; }
+      const { title, channel, duration, uploadDate, viewCount, description } = r.info;
+      console.log(`Title: ${title}`);
+      if (channel) console.log(`Channel: ${channel}`);
+      if (duration) console.log(`Duration: ${Math.floor(duration / 60)}m${duration % 60}s`);
+      if (uploadDate) console.log(`Uploaded: ${uploadDate}`);
+      if (viewCount != null) console.log(`Views: ${viewCount.toLocaleString()}`);
+      if (description) console.log(`\n${description}`);
+    }
+    if (mode !== "info") {
+      const r = await fetchYouTubeSubtitles(url);
+      if (!r.ok) { if (mode === "subs") { console.error(r.error); process.exitCode = 1; } return; }
+      if (mode === "both") console.log("\n--- Transcript ---");
+      console.log(r.subtitles);
+    }
+    return;
+  }
+
+  console.error("usage: browser-session <cookies|read|youtube> ...\n  cookies <domain> [--browser b] [--names]\n  read <url> [--browser b]\n  youtube <url> [--info|--subs]");
   process.exitCode = 1;
 }
 

@@ -3,6 +3,7 @@ import { openWithSession, domainOf, type SessionResult } from "./session.js";
 
 export { getCookies, decryptCookie, type Browser } from "./cookies.js";
 export { openWithSession, domainOf, cookieToPlaywright, type SessionResult } from "./session.js";
+export { fetchYouTubeInfo, fetchYouTubeSubtitles, type YouTubeInfo, type YouTubeInfoResult, type YouTubeSubtitlesResult } from "./youtube.js";
 
 /**
  * Read a page through a real browser using your logged-in session: auto-pulls

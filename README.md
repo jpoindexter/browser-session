@@ -7,20 +7,23 @@
 
 **Give an AI agent (or any Node code) your real logged-in browser session.** So an agent can read your login-walled pages — X, Reddit, LinkedIn, internal dashboards — and act on what it finds, **without you pasting cookies**. Built for agent "internet reach"; works as a plain library too.
 
-Two things:
+Three things:
 
 1. **Read + decrypt your browser cookies** (Brave / Chrome / Edge) — **zero dependencies**. The Node equivalent of yt-dlp's `--cookies-from-browser`.
 2. **Open any page in a headless browser with that session** — read login-walled / JS-rendered pages a plain `fetch` can't (via Playwright).
+3. **YouTube reach** — video metadata + subtitle/transcript extraction via yt-dlp (`pip install yt-dlp`). No login needed for public videos.
 
-No extension, no manual cookie export. Errors-as-values, never throws — drop it straight into an agent tool.
+No extension, no manual cookie export. Errors-as-values, never throws — drop any of these straight into an agent tool.
 
 ### For agents
 
-Wrap the two calls as tools your agent can call:
+Wrap the calls as tools your agent can call:
 - `getCookies({ browser, domain })` → a cookie header it can attach to API calls.
 - `readPage(url, { browser })` → the rendered text of a logged-in page, for the model to read.
+- `fetchYouTubeInfo(url)` → title, channel, duration, description, view count.
+- `fetchYouTubeSubtitles(url)` → deduplicated plain-text transcript.
 
-That's it — the agent reuses *your* session instead of needing its own logins or API keys.
+The agent reuses *your* session instead of needing its own logins or API keys. YouTube doesn't require login — just yt-dlp.
 
 A drop-in tool (any framework):
 
@@ -79,7 +82,12 @@ browser-session cookies x.com --browser brave          # print the cookie header
 browser-session cookies x.com --names                  # just the cookie names
 browser-session read https://www.reddit.com/ --browser brave   # render your logged-in page
 browser-session read https://example.com               # anonymous read
+browser-session youtube https://youtube.com/watch?v=… # title + transcript
+browser-session youtube https://youtube.com/watch?v=… --subs   # transcript only
+browser-session youtube https://youtube.com/watch?v=… --info   # metadata only
 ```
+
+YouTube requires `yt-dlp`: `pip install yt-dlp`
 
 ## How it works
 
@@ -89,6 +97,8 @@ browser-session read https://example.com               # anonymous read
 ## API
 
 `getCookies({ browser?, domain, profile? })` · `decryptCookie(hex, key)` · `openWithSession(url, cookie, { settleMs? })` · `readPage(url, { browser?, profile? })` · `cookieToPlaywright(header, url)` · `domainOf(url)`.
+
+**YouTube:** `fetchYouTubeInfo(url)` → `{ok,info:{title,channel?,duration?,description?,uploadDate?,viewCount?,url}}` · `fetchYouTubeSubtitles(url)` → `{ok,subtitles}`.
 
 ## License
 
